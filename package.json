@@ -1,0 +1,9 @@
+{
+  "name": "avito-wedding-catalog",
+  "private": true,
+  "description": "Каталог демо свадебных приглашений WeddingDreams",
+  "scripts": {
+    "start": "npx serve -l 3456",
+    "preview": "npx serve -l 3456"
+  }
+}
