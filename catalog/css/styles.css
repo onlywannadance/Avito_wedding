@@ -223,56 +223,99 @@ body {
 
 .hero__phones {
   position: relative;
-  width: 280px;
-  height: 320px;
+  width: 300px;
+  height: 380px;
 }
 
-.hero__phone {
+.hero__phone-slot {
   position: absolute;
-  border-radius: 28px;
-  background: linear-gradient(145deg, #e8e4dc, #d4cfc4);
-  box-shadow: var(--shadow-lg);
 }
 
-.hero__phone--back {
-  width: 200px;
-  height: 280px;
-  right: 0;
-  top: 20px;
-  transform: rotate(8deg);
-  opacity: 0.85;
-  padding: 12px 10px;
-  background: linear-gradient(160deg, #faf8f4, #ddd8cf);
+.hero__phone-slot--back {
+  right: -10px;
+  top: 36px;
+  transform: rotate(10deg);
+  z-index: 1;
+  opacity: 0.92;
 }
 
-.hero__phone--front {
-  width: 220px;
-  height: 300px;
+.hero__phone-slot--front {
   left: 0;
   top: 0;
-  padding: 12px 10px;
-  background: linear-gradient(160deg, #faf8f4, #e0dbd2);
+  z-index: 2;
 }
 
-.hero__phone-notch {
-  width: 56px;
-  height: 5px;
-  background: rgba(44, 40, 37, 0.15);
-  border-radius: 999px;
-  margin: 0 auto 10px;
+.card:hover .iphone17--card {
+  transform: translateY(-6px);
 }
 
-.hero__phone-screen {
-  height: calc(100% - 24px);
-  border-radius: 20px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: inset 0 0 0 1px rgba(44, 40, 37, 0.06);
+.card:hover .iphone17--card .iphone17__shell {
+  box-shadow:
+    0 28px 56px rgba(20, 18, 16, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 1px 0 rgba(255, 255, 255, 0.25) inset;
+}
+
+/* ── iPhone 17 mockup ── */
+.iphone17 {
   position: relative;
+  transition: transform var(--transition);
+}
+
+.iphone17__shell {
+  position: relative;
+  background: linear-gradient(145deg, #4a4a4e 0%, #2c2c2e 35%, #1c1c1e 70%, #3a3a3c 100%);
+  border-radius: 52px;
+  padding: 10px;
+  box-shadow:
+    0 24px 48px rgba(20, 18, 16, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 1px 0 rgba(255, 255, 255, 0.18) inset;
+}
+
+.iphone17__display {
+  position: relative;
+  border-radius: 42px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.iphone17__island {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: 28%;
+  min-width: 72px;
+  max-width: 110px;
+  height: 26px;
+  background: #000;
+  border-radius: 20px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+}
+
+.iphone17__island-cam {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #2a2a3a, #0a0a12 70%);
+  box-shadow: inset 0 0 2px rgba(80, 100, 180, 0.35);
+}
+
+.iphone17__viewport {
+  position: relative;
+  overflow: hidden;
+  background: #111;
   container-type: inline-size;
 }
 
-.hero__phone-screen iframe {
+.iphone17__viewport > iframe {
   position: absolute;
   top: 0;
   left: 50%;
@@ -280,15 +323,231 @@ body {
   height: 844px;
   border: 0;
   pointer-events: none;
-  transform: translateX(-50%) scale(0.46);
+  transform: translateX(-50%) scale(0.68);
   transform-origin: top center;
   background: #fff;
 }
 
 @supports (width: 1cqw) {
-  .hero__phone-screen iframe {
+  .iphone17__viewport > iframe {
     transform: translateX(-50%) scale(calc(100cqw / 390));
   }
+}
+
+/* ── Live iframe scroll preview (3 blocks) ── */
+.phone-scroll {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  z-index: 1;
+}
+
+.phone-scroll--dragging {
+  cursor: grabbing;
+}
+
+.phone-scroll__poster {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #fff;
+  transition: opacity 0.45s ease;
+}
+
+.phone-scroll__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+.phone-scroll__live {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 0.45s ease;
+}
+
+.phone-scroll--ready .phone-scroll__live {
+  opacity: 1;
+}
+
+.phone-scroll--ready .phone-scroll__poster {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.phone-scroll__live iframe {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 390px;
+  height: 844px;
+  border: 0;
+  pointer-events: none;
+  transform: translateX(-50%) scale(0.68);
+  transform-origin: top center;
+  background: #fff;
+}
+
+@supports (width: 1cqw) {
+  .phone-scroll__live iframe {
+    transform: translateX(-50%) scale(calc(100cqw / 390));
+  }
+}
+
+.phone-scroll__dots {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 4;
+  opacity: 0.55;
+  transition: opacity 0.25s ease;
+  pointer-events: auto;
+}
+
+.card:hover .phone-scroll__dots,
+.phone-scroll--dragging .phone-scroll__dots,
+.phone-scroll:focus-within .phone-scroll__dots {
+  opacity: 1;
+}
+
+.phone-scroll__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.phone-scroll__dot--active {
+  background: #fff;
+  transform: scale(1.35);
+}
+
+.phone-scroll__dot:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.iphone17__shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 52px;
+  pointer-events: none;
+  background: linear-gradient(125deg, rgba(255,255,255,0.14) 0%, transparent 42%, transparent 100%);
+}
+
+.iphone17__button {
+  position: absolute;
+  background: linear-gradient(90deg, #3a3a3c, #5a5a5e, #3a3a3c);
+  border-radius: 2px;
+  z-index: 2;
+}
+
+.iphone17__button--action {
+  left: -3px;
+  top: 108px;
+  width: 3px;
+  height: 28px;
+  border-radius: 2px 0 0 2px;
+}
+
+.iphone17__button--vol-up {
+  left: -3px;
+  top: 148px;
+  width: 3px;
+  height: 44px;
+  border-radius: 2px 0 0 2px;
+}
+
+.iphone17__button--vol-down {
+  left: -3px;
+  top: 202px;
+  width: 3px;
+  height: 44px;
+  border-radius: 2px 0 0 2px;
+}
+
+.iphone17__button--power {
+  right: -3px;
+  top: 168px;
+  width: 3px;
+  height: 64px;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Catalog card size */
+.iphone17--card {
+  width: 210px;
+  margin: 0 auto;
+}
+
+.iphone17--card .iphone17__shell {
+  border-radius: 44px;
+  padding: 8px;
+}
+
+.iphone17--card .iphone17__display {
+  border-radius: 36px;
+}
+
+.iphone17--card .iphone17__viewport {
+  height: 358px;
+}
+
+.iphone17--card .iphone17__island {
+  height: 22px;
+  top: 8px;
+}
+
+.iphone17--card .iphone17__shine {
+  border-radius: 44px;
+}
+
+.iphone17--card .iphone17__button--action { top: 88px; height: 24px; }
+.iphone17--card .iphone17__button--vol-up { top: 122px; height: 36px; }
+.iphone17--card .iphone17__button--vol-down { top: 166px; height: 36px; }
+.iphone17--card .iphone17__button--power { top: 138px; height: 52px; }
+
+/* Hero sizes */
+.iphone17--hero {
+  width: 250px;
+}
+
+.iphone17--hero .iphone17__viewport {
+  height: 428px;
+}
+
+.iphone17--hero-sm {
+  width: 210px;
+}
+
+.iphone17--hero-sm .iphone17__viewport {
+  height: 358px;
+}
+
+.iphone17--hero-sm .iphone17__shell,
+.iphone17--hero .iphone17__shell {
+  border-radius: 48px;
+}
+
+.iphone17--hero-sm .iphone17__display,
+.iphone17--hero .iphone17__display {
+  border-radius: 40px;
 }
 
 /* Buttons */
@@ -654,68 +913,16 @@ body {
 
 .card__cover {
   position: relative;
-  height: 380px;
-  overflow: hidden;
-  background: #f0ede6;
-  border-bottom: 1px solid var(--border);
-  container-type: inline-size;
-}
-
-.card__cover-poster {
-  position: absolute;
-  inset: 0;
+  min-height: 420px;
+  padding: 1.75rem 1rem 1.5rem;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 0.5rem;
-  transition: opacity 0.4s ease;
-}
-
-.card__cover-poster img {
-  width: auto;
-  max-width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center top;
-  display: block;
-  border-radius: 2px;
-  box-shadow: 0 8px 24px rgba(44, 40, 37, 0.12);
-}
-
-.card__cover-live {
-  position: absolute;
-  inset: 0;
   overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.45s ease;
-}
-
-.card__cover--ready .card__cover-live {
-  opacity: 1;
-}
-
-.card__cover--ready .card__cover-poster {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.card__cover-live iframe {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 390px;
-  height: 844px;
-  border: 0;
-  pointer-events: none;
-  transform: translateX(-50%) scale(0.68);
-  transform-origin: top center;
-  background: #fff;
-}
-
-@supports (width: 1cqw) {
-  .card__cover-live iframe {
-    transform: translateX(-50%) scale(calc(100cqw / 390));
-  }
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 20%, rgba(168, 139, 90, 0.12) 0%, transparent 70%),
+    linear-gradient(180deg, #ece8e0 0%, #f4f1ea 100%);
+  border-bottom: 1px solid var(--border);
 }
 
 .card__body {
@@ -945,9 +1152,8 @@ body {
 
 .modal__dialog {
   position: relative;
-  width: 100%;
-  max-width: 1000px;
-  max-height: 90vh;
+  width: min(580px, calc(100% - 2rem));
+  max-height: 94vh;
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -980,19 +1186,71 @@ body {
   flex: 1;
   min-height: 0;
   position: relative;
-  background: var(--bg-alt);
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden;
+  background: #e8e4dc;
+  padding: 1.25rem;
 }
 
-.modal__frame-wrap iframe {
+.modal__device {
+  --modal-phone-w: 390px;
+  --modal-phone-h: 844px;
+  --modal-scale: 1.282;
+  position: relative;
+  width: calc(var(--modal-phone-w) * var(--modal-scale));
+  max-width: 100%;
+  height: 100%;
+  max-height: calc(94vh - 88px);
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+.modal__device-scroll {
   width: 100%;
   height: 100%;
-  min-height: 60vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(44, 40, 37, 0.08),
+    0 20px 50px rgba(44, 40, 37, 0.14);
+  scrollbar-width: thin;
+}
+
+.modal__device-scale {
+  width: var(--modal-phone-w);
+  margin: 0 auto;
+  transform: scale(var(--modal-scale));
+  transform-origin: top center;
+  padding-bottom: calc(var(--modal-phone-h) * (var(--modal-scale) - 1));
+}
+
+.modal__device-scale iframe {
+  width: var(--modal-phone-w);
+  height: var(--modal-phone-h);
   border: none;
+  display: block;
+  background: #fff;
+}
+
+.modal__device .modal__loader {
+  border-radius: 22px;
+}
+
+@media (max-width: 540px) {
+  .modal__device {
+    --modal-scale: min(1.282, calc((100vw - 3.5rem) / 390));
+  }
 }
 
 .modal__loader {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
