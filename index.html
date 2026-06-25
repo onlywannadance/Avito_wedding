@@ -4,29 +4,32 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Сайт-приглашение на свадьбу — WeddingDreams</title>
-  <meta name="description" content="25 авторских сайтов-приглашений на свадьбу. Выберите дизайн, посмотрите демо и закажите под ключ.">
+  <meta name="description" content="25 авторских шаблонов на свадьбу. Выберите дизайн, посмотрите демо и закажите под ключ.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="catalog/css/styles.css">
 </head>
 <body>
 
-  <header class="header" id="top">
-    <div class="header__inner">
-      <a href="#top" class="logo">WeddingDreams</a>
+  <div class="site-header">
+    <div class="site-header__inner">
+      <header class="header" id="top">
+        <a href="#top" class="logo">Wedding<span class="logo__accent">Dreams</span></a>
+        <button type="button" class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-nav">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
       <nav class="nav" id="main-nav" aria-label="Основное меню">
         <a href="#about" class="nav__link">О нас</a>
-        <a href="#catalog" class="nav__link">Сайты-приглашения</a>
+        <a href="#catalog" class="nav__link">Каталог шаблонов</a>
         <a href="#process" class="nav__link">Как заказать</a>
         <a href="#faq" class="nav__link">Вопрос/Ответ</a>
         <a href="#contact" class="nav__link nav__link--cta">Связаться</a>
       </nav>
-      <button type="button" class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
     </div>
-  </header>
+    <div class="nav-backdrop" id="nav-backdrop" hidden aria-hidden="true"></div>
+  </div>
 
   <div class="marquee" aria-hidden="true">
     <div class="marquee__track">
@@ -138,7 +141,7 @@
     <div class="container about">
       <div class="about__label">WeddingDreams — кто мы?</div>
       <h2 class="section__title">Студия современных<br>свадебных приглашений</h2>
-      <p class="about__text"><strong>WeddingDreams</strong> — студия, которая создаёт современные сайты-приглашения для свадеб и особых событий. Мы помогаем парам красиво и удобно рассказать гостям о своём празднике: собрать всю важную информацию в одном месте, передать атмосферу события и сэкономить время на организацию.</p>
+      <p class="about__text"><strong>WeddingDreams</strong> — студия, которая создаёт современные шаблоны для свадеб и особых событий. Мы помогаем парам красиво и удобно рассказать гостям о своём празднике: собрать всю важную информацию в одном месте, передать атмосферу события и сэкономить время на организацию.</p>
       <p class="about__text">В работе мы объединяем эстетику, продуманную структуру и внимание к деталям — от первого экрана до финальных штрихов.</p>
       <a href="#catalog" class="btn btn--outline">Смотреть каталог</a>
     </div>
@@ -181,7 +184,7 @@
     <div class="container">
       <div class="catalog-head">
         <div>
-          <h2 class="section__title">Каталог<br>сайтов-приглашений</h2>
+          <h2 class="section__title">Каталог<br>шаблонов</h2>
           <p class="catalog-head__note">Готовый макет — это только начало. Его истинную уникальность рождает ваша личная история.</p>
         </div>
       </div>
@@ -199,6 +202,7 @@
       </div>
 
       <div class="catalog__grid" id="catalog-grid" aria-live="polite"></div>
+      <nav class="catalog-pagination" id="catalog-pagination" aria-label="Страницы каталога" hidden></nav>
       <p class="catalog-count">Показано: <span id="visible-count">25</span> из <span id="demo-count">25</span></p>
     </div>
   </section>
@@ -221,7 +225,7 @@
         </details>
         <details class="faq__item">
           <summary class="faq__question">Делаете ли вы индивидуальный дизайн?</summary>
-          <p class="faq__answer">Да, мы создаём уникальные сайты-приглашения с нуля, которые идеально отражают вашу историю. Расскажите о своей идее — подготовим персональное предложение.</p>
+          <p class="faq__answer">Да, мы создаём уникальные шаблоны с нуля, которые идеально отражают вашу историю. Расскажите о своей идее — подготовим персональное предложение.</p>
         </details>
       </div>
     </div>
@@ -241,12 +245,12 @@
   <footer class="footer">
     <div class="container footer__grid">
       <div>
-        <div class="footer__brand">WeddingDreams</div>
+        <div class="footer__brand">Wedding<span class="logo__accent">Dreams</span></div>
         <p class="footer__copy">© WeddingDreams / 2026<br>Авторские сайты-приглашения на свадьбу</p>
       </div>
       <nav class="footer__nav" aria-label="Меню в подвале">
         <a href="#about">О нас</a>
-        <a href="#catalog">Сайты-приглашения</a>
+        <a href="#catalog">Шаблоны</a>
         <a href="#faq">Вопрос/Ответ</a>
         <a href="#contact">Контакты</a>
       </nav>

@@ -12,14 +12,18 @@
   };
 
   const TEMPLATE_PRICE = 3999;
+  const MOBILE_BREAKPOINT = 768;
+  const MOBILE_PAGE_SIZE = 6;
 
   let demos = [];
   let activeFilter = 'all';
   let searchQuery = '';
+  let currentPage = 1;
 
   const grid = document.getElementById('catalog-grid');
   const searchInput = document.getElementById('search-input');
   const filterContainer = document.getElementById('filters');
+  const paginationEl = document.getElementById('catalog-pagination');
   const modal = document.getElementById('preview-modal');
   const modalTitle = document.getElementById('modal-title');
   const modalIframe = document.getElementById('modal-iframe');
@@ -29,7 +33,57 @@
   const visibleCountEl = document.getElementById('visible-count');
 
   function formatPrice(n) {
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+
+  function priceHtml(n) {
+    return (
+      '<span class="card__price">' +
+      '<span class="card__price-value">' + formatPrice(n) + '</span>' +
+      '<span class="card__price-currency">₽</span>' +
+      '</span>'
+    );
+  }
+
+  function isMobileCatalog() {
+    return window.matchMedia('(max-width: ' + MOBILE_BREAKPOINT + 'px)').matches;
+  }
+
+  function getTotalPages(total) {
+    return Math.max(1, Math.ceil(total / MOBILE_PAGE_SIZE));
+  }
+
+  function syncHeaderHeight() {
+    var siteHeader = document.querySelector('.site-header');
+    if (!siteHeader) return;
+    siteHeader.style.setProperty('--header-h', siteHeader.offsetHeight + 'px');
+  }
+
+  function closeNav() {
+    var nav = document.getElementById('main-nav');
+    var burger = document.getElementById('burger');
+    var backdrop = document.getElementById('nav-backdrop');
+    if (!nav || !burger) return;
+    nav.classList.remove('nav--open');
+    burger.classList.remove('burger--open');
+    burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', 'Открыть меню');
+    document.body.classList.remove('nav-open');
+    if (backdrop) backdrop.hidden = true;
+  }
+
+  function openNav() {
+    var nav = document.getElementById('main-nav');
+    var burger = document.getElementById('burger');
+    var backdrop = document.getElementById('nav-backdrop');
+    if (!nav || !burger) return;
+    syncHeaderHeight();
+    nav.classList.add('nav--open');
+    burger.classList.add('burger--open');
+    burger.setAttribute('aria-expanded', 'true');
+    burger.setAttribute('aria-label', 'Закрыть меню');
+    document.body.classList.add('nav-open');
+    if (backdrop) backdrop.hidden = false;
   }
 
   function encodePath(p) {
@@ -166,6 +220,7 @@
     bindEvents();
     handleDeepLink();
     duplicateMarquee();
+    syncHeaderHeight();
   }
 
   function duplicateMarquee() {
@@ -201,16 +256,71 @@
       .join('');
   }
 
-  function renderCards() {
+  function renderPagination(total) {
+    if (!paginationEl) return;
+
+    if (!isMobileCatalog() || total <= MOBILE_PAGE_SIZE) {
+      paginationEl.hidden = true;
+      paginationEl.innerHTML = '';
+      return;
+    }
+
+    var totalPages = getTotalPages(total);
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    var pages = [];
+    for (var p = 1; p <= totalPages; p++) {
+      pages.push(
+        '<button type="button" class="catalog-pagination__page' +
+        (p === currentPage ? ' catalog-pagination__page--active' : '') +
+        '" data-page="' + p + '" aria-label="Страница ' + p + '"' +
+        (p === currentPage ? ' aria-current="page"' : '') + '>' + p + '</button>'
+      );
+    }
+
+    paginationEl.innerHTML =
+      '<p class="catalog-pagination__info">Страница ' + currentPage + ' из ' + totalPages + '</p>' +
+      '<div class="catalog-pagination__controls">' +
+      '<button type="button" class="catalog-pagination__btn" data-page-action="prev"' +
+      (currentPage <= 1 ? ' disabled' : '') + '>Назад</button>' +
+      '<div class="catalog-pagination__pages" role="group" aria-label="Номера страниц">' + pages.join('') + '</div>' +
+      '<button type="button" class="catalog-pagination__btn" data-page-action="next"' +
+      (currentPage >= totalPages ? ' disabled' : '') + '>Далее</button>' +
+      '</div>';
+
+    paginationEl.hidden = false;
+  }
+
+  function goToPage(page, scrollToCatalog) {
+    var filtered = getFilteredDemos();
+    var totalPages = getTotalPages(filtered.length);
+    currentPage = Math.max(1, Math.min(totalPages, page));
+    renderCards({ scrollToCatalog: scrollToCatalog !== false });
+  }
+
+  function renderCards(options) {
+    options = options || {};
     var filtered = getFilteredDemos();
     if (visibleCountEl) visibleCountEl.textContent = filtered.length;
 
     if (filtered.length === 0) {
       grid.innerHTML = '<div class="catalog__empty"><p>Ничего не найдено. Попробуйте другой запрос.</p></div>';
+      if (paginationEl) {
+        paginationEl.hidden = true;
+        paginationEl.innerHTML = '';
+      }
       return;
     }
 
-    grid.innerHTML = filtered
+    var visible = filtered;
+    if (isMobileCatalog() && filtered.length > MOBILE_PAGE_SIZE) {
+      var totalPages = getTotalPages(filtered.length);
+      if (currentPage > totalPages) currentPage = totalPages;
+      var start = (currentPage - 1) * MOBILE_PAGE_SIZE;
+      visible = filtered.slice(start, start + MOBILE_PAGE_SIZE);
+    }
+
+    grid.innerHTML = visible
       .map(function (demo, i) {
         return (
           '<article class="card" data-id="' + demo.id + '" style="transition-delay:' + (i % 6) * 60 + 'ms">' +
@@ -219,7 +329,7 @@
           '</div>' +
           '<div class="card__body">' +
           '<div class="card__prices">' +
-          '<span class="card__price">' + formatPrice(TEMPLATE_PRICE) + '</span>' +
+          priceHtml(TEMPLATE_PRICE) +
           '</div>' +
           '<p class="card__feature">' + (demo.feature || '') + '</p>' +
           '<h3 class="card__title">' + demo.name + '</h3>' +
@@ -231,8 +341,14 @@
       })
       .join('');
 
+    renderPagination(filtered.length);
     observeCards();
     initPhoneScrolls();
+
+    if (options.scrollToCatalog) {
+      var catalog = document.getElementById('catalog');
+      if (catalog) catalog.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   function initPhoneScrolls() {
@@ -475,6 +591,7 @@
     if (searchInput) {
       searchInput.addEventListener('input', function (e) {
         searchQuery = e.target.value;
+        currentPage = 1;
         renderCards();
       });
     }
@@ -483,11 +600,26 @@
       var btn = e.target.closest('[data-filter]');
       if (!btn) return;
       activeFilter = btn.dataset.filter;
+      currentPage = 1;
       filterContainer.querySelectorAll('.filter-btn').forEach(function (b) {
         b.classList.toggle('filter-btn--active', b.dataset.filter === activeFilter);
       });
       renderCards();
     });
+
+    if (paginationEl) {
+      paginationEl.addEventListener('click', function (e) {
+        var pageBtn = e.target.closest('[data-page]');
+        if (pageBtn) {
+          goToPage(Number(pageBtn.dataset.page));
+          return;
+        }
+        var actionBtn = e.target.closest('[data-page-action]');
+        if (!actionBtn || actionBtn.disabled) return;
+        if (actionBtn.dataset.pageAction === 'prev') goToPage(currentPage - 1);
+        if (actionBtn.dataset.pageAction === 'next') goToPage(currentPage + 1);
+      });
+    }
 
     grid.addEventListener('click', function (e) {
       var demoBtn = e.target.closest('[data-demo-id]');
@@ -510,27 +642,42 @@
       stabilizeModalIframe(modalIframe);
     });
 
-    var header = document.querySelector('.header');
+    var siteHeader = document.querySelector('.site-header');
     window.addEventListener('scroll', function () {
-      header.classList.toggle('header--scrolled', window.scrollY > 20);
+      if (siteHeader) siteHeader.classList.toggle('site-header--scrolled', window.scrollY > 20);
     }, { passive: true });
 
     var burger = document.getElementById('burger');
     var nav = document.getElementById('main-nav');
+    var navBackdrop = document.getElementById('nav-backdrop');
+
     if (burger && nav) {
       burger.addEventListener('click', function () {
-        var open = nav.classList.toggle('nav--open');
-        burger.classList.toggle('burger--open', open);
-        burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (nav.classList.contains('nav--open')) closeNav();
+        else openNav();
       });
+
+      if (navBackdrop) {
+        navBackdrop.addEventListener('click', closeNav);
+      }
+
       nav.querySelectorAll('a').forEach(function (link) {
-        link.addEventListener('click', function () {
-          nav.classList.remove('nav--open');
-          burger.classList.remove('burger--open');
-          burger.setAttribute('aria-expanded', 'false');
-        });
+        link.addEventListener('click', closeNav);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && nav.classList.contains('nav--open')) closeNav();
       });
     }
+
+    window.addEventListener('resize', function () {
+      syncHeaderHeight();
+      if (!isMobileCatalog()) {
+        currentPage = 1;
+        closeNav();
+      }
+      renderCards({ scrollToCatalog: false });
+    }, { passive: true });
 
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
       anchor.addEventListener('click', function (e) {
