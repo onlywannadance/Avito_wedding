@@ -92,20 +92,17 @@
 
     grid.innerHTML = filtered
       .map(function (demo, i) {
+        var demoPath = demo.path.split('/').map(encodeURIComponent).join('/');
         var previewPath = (demo.preview || demo.path).split('/').map(encodeURIComponent).join('/');
-        var accent2 = demo.accent2 || demo.accent;
         return (
-          '<article class="card" data-id="' + demo.id + '" style="transition-delay:' + (i % 6) * 60 + 'ms;--card-accent:' + demo.accent + ';--card-accent2:' + accent2 + '">' +
-          '<div class="card__preview">' +
-          '<div class="card__preview-bg" aria-hidden="true">' +
-          '<div class="card__preview-orb card__preview-orb--1"></div>' +
-          '<div class="card__preview-orb card__preview-orb--2"></div></div>' +
-          '<div class="card__device" aria-hidden="true">' +
-          '<div class="card__device-frame">' +
-          '<div class="card__device-notch"></div>' +
-          '<div class="card__device-screen">' +
-          '<img class="card__thumb" src="' + previewPath + '" alt="Превью «' + demo.name + '»" loading="lazy">' +
-          '</div></div></div></div>' +
+          '<article class="card" data-id="' + demo.id + '" style="transition-delay:' + (i % 6) * 60 + 'ms">' +
+          '<div class="card__cover">' +
+          '<div class="card__cover-poster">' +
+          '<img src="' + previewPath + '" alt="" loading="lazy" aria-hidden="true">' +
+          '</div>' +
+          '<div class="card__cover-live">' +
+          '<iframe data-src="' + demoPath + '" title="Превью «' + demo.name + '»" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>' +
+          '</div></div>' +
           '<div class="card__body">' +
           '<div class="card__prices">' +
           '<span class="card__price">' + formatPrice(TEMPLATE_PRICE) + '</span>' +
@@ -121,6 +118,37 @@
       .join('');
 
     observeCards();
+    initPreviewIframes();
+  }
+
+  function initPreviewIframes() {
+    var iframes = grid.querySelectorAll('.card__cover-live iframe[data-src]');
+    if (!('IntersectionObserver' in window)) {
+      iframes.forEach(loadPreviewIframe);
+      return;
+    }
+    var loader = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          loadPreviewIframe(entry.target);
+          loader.unobserve(entry.target);
+        });
+      },
+      { rootMargin: '80px 0px', threshold: 0.01 }
+    );
+    iframes.forEach(function (iframe) { loader.observe(iframe); });
+  }
+
+  function loadPreviewIframe(iframe) {
+    if (!iframe.dataset.src || iframe.dataset.loaded === 'true') return;
+    iframe.addEventListener('load', function onLoad() {
+      var cover = iframe.closest('.card__cover');
+      if (cover) cover.classList.add('card__cover--ready');
+      iframe.removeEventListener('load', onLoad);
+    });
+    iframe.src = iframe.dataset.src;
+    iframe.dataset.loaded = 'true';
   }
 
   function observeCards() {
